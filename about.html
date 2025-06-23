@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriDiary - About</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fruit: {
+                            orange: '#FF9F1C',
+                            strawberry: '#FF5C8D',
+                            blueberry: '#7678ED',
+                            lime: '#57CC99',
+                            watermelon: '#FF5E5B',
+                            banana: '#FFE74C'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delay': 'float 6s ease-in-out 2s infinite',
+                        'float-delay-more': 'float 6s ease-in-out 4s infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .fruit-pattern {
+            background-color: #fdfbf7;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z' fill='rgba(255,159,28,0.1)'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, #FF9F1C 0%, #FF5C8D 50%);
+        }
+        
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .tech-badge {
+            transition: all 0.2s ease;
+        }
+        
+        .tech-badge:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body class="min-h-screen fruit-pattern flex flex-col">
+    <!-- Header with Fruit Icons -->
+    <header class="sticky top-0 w-full bg-white bg-opacity-95 shadow-md z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="text-2xl font-bold">
+                        <span class="text-fruit-orange">NutriDiary</span>
+                        <i class="fas fa-apple-alt text-fruit-strawberry ml-1"></i>
+                    </div>
+                </a>
+                <nav class="hidden md:flex space-x-6 text-gray-700">
+                    <a href="/" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-home mr-1"></i> Home</a>
+                    <a href="/login" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-magnifying-glass-chart mr-1"></i> Nutri-Checker</a>
+                    <a href="/login" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-apple-alt mr-1"></i> Your-Food</a>
+                    <a href="/login" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-lightbulb mr-1"></i> Nutri-AI</a>
+                    <a href="/about" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-info-circle mr-1"></i> About</a>
+                </nav>
+                <a href="/login" class="hidden md:block bg-fruit-orange hover:bg-fruit-strawberry text-white px-5 py-2 rounded-full transition duration-300 shadow-md">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Login
+                </a>
+                <button class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content with Floating Fruit Icons -->
+    <main class="flex-grow container mx-auto px-4 py-8 relative overflow-hidden">
+        <!-- Floating fruits decoration -->
+        <div class="absolute top-10 right-10 text-4xl opacity-20 animate-float">
+            <i class="fas fa-apple-whole text-fruit-watermelon"></i>
+        </div>
+        <div class="absolute bottom-20 left-10 text-3xl opacity-20 animate-float-delay">
+            <i class="fas fa-lemon text-fruit-banana"></i>
+        </div>
+        <div class="absolute top-1/3 right-1/4 text-5xl opacity-20 animate-float-delay-more">
+            <i class="fas fa-carrot text-fruit-orange"></i>
+        </div>
+        <div class="absolute bottom-10 right-1/3 text-4xl opacity-20 animate-float">
+            <i class="fas fa-strawberry text-fruit-strawberry"></i>
+        </div>
+
+        <!-- About Section -->
+        <div class="max-w-4xl mx-auto bg-white/80 backdrop-blur-md rounded-2xl shadow-xl p-8 mt-8">
+            <div class="flex items-center mb-8">
+                <h1 class="text-2xl font-bold text-fruit-orange">About NutriDiary</h1>
+            </div>
+
+            <div class="text-lg text-gray-700 leading-relaxed space-y-6">
+                <p class="relative">
+                    <span class="font-bold text-fruit-orange">NutriDiary</span> is a web application that helps users understand and track nutritional information of various fruits. This application is designed to provide useful knowledge for the general public, researchers, and health practitioners.
+                </p>
+            </div>
+
+            <!-- Features Section -->
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold text-fruit-orange mb-6 flex items-center">
+                    <i class="fas fa-star mr-2 text-fruit-banana"></i>
+                    Feature
+                </h2>
+                
+                <div class="grid md:grid-cols-3 gap-6">
+                    <!-- Feature 1 -->
+                    <div class="feature-card bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-fruit-orange">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-fruit-orange/10 p-2 rounded-lg">
+                                    <i class="fas fa-check-circle text-fruit-orange text-xl"></i>
+                                </div>
+                                <h3 class="ml-3 text-xl font-semibold text-gray-800">Nutri-Checker</h3>
+                            </div>
+                            <p class="text-gray-600">Features nutritional value and education about fruits.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature 2 -->
+                    <div class="feature-card bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-fruit-strawberry">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-fruit-strawberry/10 p-2 rounded-lg">
+                                    <i class="fas fa-apple-whole text-fruit-strawberry text-xl"></i>
+                                </div>
+                                <h3 class="ml-3 text-xl font-semibold text-gray-800">Your Food</h3>
+                            </div>
+                            <p class="text-gray-600">Save the user's favorite fruit list and perform data management (CRUD).</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Feature 3 -->
+                    <div class="feature-card bg-white rounded-xl shadow-md overflow-hidden border-t-4 border-fruit-orange">
+                        <div class="p-6">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-fruit-orange/10 p-2 rounded-lg">
+                                    <i class="fas fa-lightbulb text-fruit-orange text-xl"></i>
+                                </div>
+                                <h3 class="ml-3 text-xl font-semibold text-gray-800">Nutri-AI</h3>
+                            </div>
+                            <p class="text-gray-600"><em>Retrieval-Augmented Generation (RAG)</em> based intelligent features using the <strong>Gemini 2 Flash model.</strong>.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technologies Section -->
+            <div class="mt-12">
+                <h2 class="text-2xl font-bold text-fruit-orange mb-6 flex items-center">
+                    <i class="fas fa-code mr-2 text-fruit-lime"></i>
+                    Made With
+                </h2>
+                
+                <div class="flex flex-wrap gap-3">
+                    <span class="tech-badge bg-fruit-orange/10 text-fruit-orange px-4 py-2 rounded-full font-medium">
+                        <i class="fab fa-python mr-1"></i> Flask
+                    </span>
+                    <span class="tech-badge bg-fruit-strawberry/10 text-fruit-strawberry px-4 py-2 rounded-full font-medium">
+                        <i class="fab fa-css3 mr-1"></i> Tailwind
+                    </span>
+                    <span class="tech-badge bg-fruit-orange/10 text-fruit-orange px-4 py-2 rounded-full font-medium">
+                        <i class="fas fa-database mr-1"></i> MySQL
+                    </span>
+                    <span class="tech-badge bg-fruit-orange/10 text-fruit-orange px-4 py-2 rounded-full font-medium">
+                        <i class="fas fa-thumbtack mr-1"></i> Pinecone
+                    </span>
+                    <span class="tech-badge bg-fruit-strawberry/10 text-fruit-strawberry px-4 py-2 rounded-full font-medium">
+                        <i class="fa-solid fa-dice-one"></i> Sentence-Transformer
+                    </span>
+                    <span class="tech-badge bg-fruit-orange/10 text-fruit-orange px-4 py-2 rounded-full font-medium">
+                        <i class="fas fa-robot mr-1"></i> Gemini-2.0-Flash
+                    </span>
+                </div>
+            </div>
+
+            <!-- Closing Section -->
+            <div class="mt-12 bg-gradient p-6 rounded-xl text-white">
+                <p class="text-lg">
+                    It is hoped that <span class="font-bold">NutriDiary</span> can be an educational and informative tool that is useful in understanding the content of fruits interactively.
+                </p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white/80 backdrop-blur-md shadow-inner p-6 mt-12">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="flex items-center mb-4 md:mb-0">
+                <span class="text-xl font-bold text-fruit-orange">NutriDiary</span>
+                <i class="fas fa-apple-alt text-fruit-strawberry ml-1"></i>
+            </div>
+            <div class="text-gray-600 text-sm">
+                © 2025 NutriDiary. All rights reserved.
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

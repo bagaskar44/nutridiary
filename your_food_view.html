@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>NutriDiary - Your Food</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fruit: {
+                            orange: '#FF9F1C',
+                            strawberry: '#FF5C8D',
+                            blueberry: '#7678ED',
+                            lime: '#57CC99',
+                            watermelon: '#FF5E5B',
+                            banana: '#FFE74C'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delay': 'float 6s ease-in-out 2s infinite',
+                        'float-delay-more': 'float 6s ease-in-out 4s infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.5s ease-out forwards',
+                        'slide-out': 'slideOut 0.5s ease-in forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideOut: {
+                            '0%': { transform: 'translateX(0)', opacity: '1' },
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+                        }
+                    },
+                    screens: {
+                        'xs': '480px',
+                        'sm': '640px',
+                        'md': '768px',
+                        'lg': '1024px',
+                        'xl': '1280px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .fruit-pattern {
+            background-color: #fdfbf7;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z' fill='rgba(255,159,28,0.1)'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, #FF9F1C 0%, #FF5C8D 50%);
+        }
+        
+        .food-banner::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(255, 159, 28, 0.85) 0%, rgba(255, 92, 141, 0.85) 100%);
+        }
+        
+        .results-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 159, 28, 0.5) transparent;
+        }
+        
+        .results-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .results-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .results-container::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 159, 28, 0.5);
+            border-radius: 20px;
+        }
+        
+        .food-card {
+            transition: all 0.3s ease;
+        }
+        
+        .food-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .nutrition-bar {
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nutrition-progress {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slide-in 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .alert.closing {
+            animation: slide-out 0.5s ease-in forwards;
+        }
+
+        .alert-icon {
+            margin-right: 12px;
+        }
+
+        .alert-close {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .alert-close:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        .fruit-icon {
+            position: absolute;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .floating-icon-1 {
+            top: 10%;
+            left: 5%;
+            font-size: 3rem;
+            color: #FF9F1C;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-icon-2 {
+            top: 20%;
+            right: 10%;
+            font-size: 2.5rem;
+            color: #FF5C8D;
+            animation: float 6s ease-in-out 2s infinite;
+        }
+
+        .floating-icon-3 {
+            bottom: 15%;
+            left: 15%;
+            font-size: 2rem;
+            color: #57CC99;
+            animation: float 6s ease-in-out 4s infinite;
+        }
+
+        .floating-icon-4 {
+            bottom: 25%;
+            right: 5%;
+            font-size: 3.5rem;
+            color: #7678ED;
+            animation: float 6s ease-in-out 1s infinite;
+        }
+    </style>
+</head>
+<body class="min-h-screen fruit-pattern flex flex-col">
+    <!-- Alert Container -->
+    <div class="alert-container">
+        <div class="alert bg-fruit-lime/90 text-white" data-alert>
+            <div class="flex items-center">
+                <span class="alert-icon">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+                <span>Food collection loaded successfully!</span>
+            </div>
+            <span class="alert-close" onclick="closeAlert(this)">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <header class="sticky top-0 w-full bg-white bg-opacity-95 shadow-md z-20">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="text-2xl font-bold">
+                        <span class="text-fruit-orange">NutriDiary</span>
+                        <i class="fas fa-apple-alt text-fruit-strawberry ml-1"></i>
+                    </div>
+                </a>
+                <nav class="hidden md:flex space-x-6 text-gray-700">
+                    <a href="/" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-home mr-1"></i> Home</a>
+                    <a href="/nutrichecker" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-magnifying-glass-chart mr-1"></i> Nutri-Checker</a>
+                    <a href="/yourfood" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-apple-alt mr-1"></i> Your-Food</a>
+                    <a href="/chat" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-lightbulb mr-1"></i> Nutri-AI</a>
+                </nav>
+                <a href="/logout" class="hidden md:block bg-fruit-orange hover:bg-fruit-strawberry text-white px-5 py-2 rounded-full transition duration-300 shadow-md">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Logout
+                </a>
+                <button class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Banner with Page Title -->
+    <div class="w-full bg-gradient py-12 px-4 text-white shadow-lg relative overflow-hidden">
+        <div class="z-10 relative container mx-auto px-4 text-center text-white">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2">Your Food Collection</h1>
+            <p class="text-lg mb-4">Track and manage your favorite foods</p>
+            <div class="inline-block bg-white/20 backdrop-blur-sm px-6 py-2 rounded-full">
+                <p>You have <span class="font-bold text-white">2</span> foods in your collection</p>
+            </div>
+        </div>
+        
+        <!-- Floating Fruit Icons -->
+        <i class="fas fa-apple-alt fruit-icon floating-icon-1"></i>
+        <i class="fas fa-lemon fruit-icon floating-icon-2"></i>
+        <i class="fas fa-carrot fruit-icon floating-icon-3"></i>
+        <i class="fas fa-pepper-hot fruit-icon floating-icon-4"></i>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow container mx-auto px-4 py-8">
+        <!-- Food Collection -->
+        <div class="results-container">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Sample Food Card 1 -->
+                <div class="food-card bg-white rounded-xl shadow-lg overflow-hidden flex">
+                    <div class="w-1/3 flex-shrink-0">
+                        <div class="relative h-full">
+                            <img src="/static/apple.png" 
+                                 alt="Apple" 
+                                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+                                 loading="lazy" />
+                            <div class="absolute top-0 right-0 bg-fruit-orange text-white px-2 py-1 rounded-bl-lg text-sm font-medium">
+                                52 kcal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-2/3 p-4 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 mb-2">Apple</h2>
+                            <div class="nutrition-bars space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Carbs</span>
+                                        <span class="font-medium text-gray-700">14g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-orange" style="width: 14%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Protein</span>
+                                        <span class="font-medium text-gray-700">0.3g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-blueberry" style="width: 0.3%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fat</span>
+                                        <span class="font-medium text-gray-700">0.2g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-strawberry" style="width: 0.2%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fiber</span>
+                                        <span class="font-medium text-gray-700">2.4g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-lime" style="width: 2.4%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <a href="/remove-your-food/1" 
+                               class="block w-full text-center bg-fruit-watermelon text-white px-4 py-2 rounded-lg hover:bg-fruit-watermelon/80 transition-colors text-sm font-medium" 
+                               onclick="return confirm('Are you sure you want to remove this food?');">
+                                <i class="fas fa-trash-alt mr-2"></i>
+                                <span>Remove</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <!-- Sample Food Card 2 -->
+                <div class="food-card bg-white rounded-xl shadow-lg overflow-hidden flex">
+                    <div class="w-1/3 flex-shrink-0">
+                        <div class="relative h-full">
+                            <img src="/static/banana.png" 
+                                 alt="Banana" 
+                                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+                                 loading="lazy" />
+                            <div class="absolute top-0 right-0 bg-fruit-orange text-white px-2 py-1 rounded-bl-lg text-sm font-medium">
+                                89 kcal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-2/3 p-4 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 mb-2">Banana</h2>
+                            <div class="nutrition-bars space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Carbs</span>
+                                        <span class="font-medium text-gray-700">23g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-orange" style="width: 23%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Protein</span>
+                                        <span class="font-medium text-gray-700">1.1g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-blueberry" style="width: 1.1%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fat</span>
+                                        <span class="font-medium text-gray-700">0.3g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-strawberry" style="width: 0.3%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fiber</span>
+                                        <span class="font-medium text-gray-700">2.6g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-lime" style="width: 2.6%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <a href="/remove-your-food/2" 
+                               class="block w-full text-center bg-fruit-watermelon text-white px-4 py-2 rounded-lg hover:bg-fruit-watermelon/80 transition-colors text-sm font-medium" 
+                               onclick="return confirm('Are you sure you want to remove this food?');">
+                                <i class="fas fa-trash-alt mr-2"></i>
+                                <span>Remove</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white py-6 px-4 shadow-inner">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="font-bold text-lg bg-clip-text text-fruit-orange">NutriDiary</div>
+                    <span class="text-fruit-strawberry text-2xl mr-2"><i class="fas fa-apple-whole ml-1"></i></span>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-gray-600 text-sm">© 2025 NutriDiary - Be mindful of each ingredient you consume.🍏</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile menu toggle
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const closeMenuButton = document.getElementById('close-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && closeMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.remove('hidden');
+                mobileMenu.classList.add('flex');
+                document.body.style.overflow = 'hidden';
+            });
+
+            closeMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                mobileMenu.classList.remove('flex');
+                document.body.style.overflow = '';
+            });
+        }
+
+        // Alert close function
+        function closeAlert(button) {
+            const alert = button.closest('[data-alert]');
+            alert.classList.add('closing');
+            setTimeout(() => alert.remove(), 500);
+        }
+
+        // Auto-hide alerts after 5 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            const alerts = document.querySelectorAll('[data-alert]');
+            alerts.forEach(alert => {
+                setTimeout(() => {
+                    if (alert) {
+                        alert.classList.add('closing');
+                        setTimeout(() => alert.remove(), 500);
+                    }
+                }, 5000);
+            });
+        });
+    </script>
+</body>
+</html>

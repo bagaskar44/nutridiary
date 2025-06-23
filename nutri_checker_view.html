@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriDiary - Nutri-Checker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        fruit: {
+                            orange: '#FF9F1C',
+                            strawberry: '#FF5C8D',
+                            blueberry: '#7678ED',
+                            lime: '#57CC99',
+                            watermelon: '#FF5E5B',
+                            banana: '#FFE74C'
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delay': 'float 6s ease-in-out 2s infinite',
+                        'float-delay-more': 'float 6s ease-in-out 4s infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'slide-in': 'slideIn 0.5s ease-out forwards',
+                        'slide-out': 'slideOut 0.5s ease-in forwards',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' },
+                        },
+                        slideOut: {
+                            '0%': { transform: 'translateX(0)', opacity: '1' },
+                            '100%': { transform: 'translateX(100%)', opacity: '0' },
+                        }
+                    },
+                    screens: {
+                        'xs': '480px',
+                        'sm': '640px',
+                        'md': '768px',
+                        'lg': '1024px',
+                        'xl': '1280px',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        
+        .fruit-pattern {
+            background-color: #fdfbf7;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z' fill='rgba(255,159,28,0.1)'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        
+        .bg-gradient {
+            background: linear-gradient(135deg, #FF9F1C 0%, #FF5C8D 50%);
+        }
+        
+        .input-focus:focus {
+            border-color: #FF9F1C;
+            box-shadow: 0 0 0 3px rgba(255, 159, 28, 0.3);
+        }
+        
+        .results-container {
+            max-height: 70vh;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 159, 28, 0.5) transparent;
+        }
+        
+        .results-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .results-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .results-container::-webkit-scrollbar-thumb {
+            background-color: rgba(255, 159, 28, 0.5);
+            border-radius: 20px;
+        }
+        
+        .food-card {
+            transition: all 0.3s ease;
+            max-width: 100%;
+            min-height: 180px;
+        }
+        
+        .food-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .nutrition-bar {
+            height: 6px;
+            border-radius: 3px;
+            overflow: hidden;
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .nutrition-progress {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .alert {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: slide-in 0.5s ease-out;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .alert.closing {
+            animation: slide-out 0.5s ease-in forwards;
+        }
+
+        .alert-icon {
+            margin-right: 12px;
+        }
+
+        .alert-close {
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 50%;
+            transition: background-color 0.2s;
+        }
+
+        .alert-close:hover {
+            background-color: rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 640px) {
+            .food-card img {
+                width: 120px;
+            }
+            .food-card h2 {
+                font-size: 1.125rem;
+            }
+            .alert-container {
+                top: 10px;
+                right: 10px;
+                max-width: calc(100% - 20px);
+            }
+        }
+
+        @media (min-width: 641px) and (max-width: 1023px) {
+            .food-card img {
+                width: 140px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen fruit-pattern flex flex-col">
+    <!-- Alert Messages -->
+    <div class="alert-container">
+        <div class="alert bg-fruit-lime/90 text-white" data-alert>
+            <div class="flex items-center">
+                <span class="alert-icon">
+                    <i class="fas fa-check-circle"></i>
+                </span>
+                <span>Search completed successfully!</span>
+            </div>
+            <span class="alert-close" onclick="closeAlert(this)">
+                <i class="fas fa-times"></i>
+            </span>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <header class="sticky top-0 w-full bg-white bg-opacity-95 shadow-md z-20">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <a href="/" class="flex items-center space-x-2">
+                    <div class="text-2xl font-bold">
+                        <span class="text-fruit-orange">NutriDiary</span>
+                        <i class="fas fa-apple-alt text-fruit-strawberry ml-1"></i>
+                    </div>
+                </a>
+                <nav class="hidden md:flex space-x-6 text-gray-700">
+                    <a href="/" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-home mr-1"></i> Home</a>
+                    <a href="/nutrichecker" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-magnifying-glass-chart mr-1"></i> Nutri-Checker</a>
+                    <a href="/yourfood" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-apple-alt mr-1"></i> Your-Food</a>
+                    <a href="/chat" class="nav-item hover:text-fruit-orange transition duration-300 font-medium"><i class="fas fa-lightbulb mr-1"></i> Nutri-AI</a>
+                </nav>
+                <a href="/logout" class="hidden md:block bg-fruit-orange hover:bg-fruit-strawberry text-white px-5 py-2 rounded-full transition duration-300 shadow-md">
+                    <i class="fas fa-sign-in-alt mr-1"></i> Logout
+                </a>
+                <button class="md:hidden text-gray-700 focus:outline-none">
+                    <i class="fas fa-bars text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <div class="w-full bg-gradient py-12 px-4 text-white shadow-lg relative overflow-hidden">
+        <div class="absolute inset-0 opacity-10">
+            <div class="absolute top-1/4 left-1/4 text-5xl animate-float">🍎</div>
+            <div class="absolute top-1/2 left-2/3 text-5xl animate-float-delay">🍊</div>
+            <div class="absolute top-3/4 left-1/3 text-5xl animate-float-delay-more">🥝</div>
+            <div class="absolute top-1/6 left-2/3 text-5xl animate-float">🍌</div>
+        </div>
+        <div class="max-w-6xl mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="md:w-1/2 mb-8 md:mb-0">
+                    <h1 class="text-4xl font-bold mb-2">Nutri-Checker</h1>
+                    <p class="text-xl mb-4">Discover the nutritional value of any food</p>
+                    <p class="opacity-80">Learn about calories, vitamins, minerals, and health benefits to make smarter food choices.</p>
+                </div>
+                
+                <div class="md:w-1/2 max-w-md w-full">
+                    <form method="POST" action="/nutrichecker" class="relative">
+                        <div class="relative">
+                            <input
+                                name="search"
+                                id="search-input"
+                                type="text"
+                                placeholder="Enter food name (e.g., apple, banana, kiwi)"
+                                class="w-full py-4 px-6 pl-12 rounded-full text-gray-800 font-medium shadow-lg focus:outline-none input-focus"
+                                value=""
+                            >
+                            <span class="absolute left-4 top-1/2 transform -translate-y-1/2 text-fruit-orange">
+                                <i class="fas fa-search"></i>
+                            </span>
+                        </div>
+                        <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient text-white p-3 rounded-full hover:shadow-lg transition">
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </form>
+                    <div class="mt-4 text-center">
+                        <p class="flex items-center justify-center">
+                            <i class="fas fa-check-circle mr-2"></i>
+                            Enter fruit name
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex-grow container mx-auto px-4 py-8 outline outline-2 outline-fruit-orange">
+        <div class="results-container">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Sample Food Card 1 -->
+                <div class="food-card bg-white rounded-xl shadow-lg overflow-hidden flex">
+                    <div class="w-1/3 flex-shrink-0">
+                        <div class="relative h-full">
+                            <img src="/static/apple.png" 
+                                 alt="Apple" 
+                                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+                                 loading="lazy" />
+                            <div class="absolute top-0 right-0 bg-fruit-orange text-white px-2 py-1 rounded-bl-lg text-sm font-medium">
+                                52 kcal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-2/3 p-4 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 mb-2">Apple</h2>
+                            <div class="nutrition-bars space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Carbs</span>
+                                        <span class="font-medium text-gray-700">14g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-orange" style="width: 14%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Protein</span>
+                                        <span class="font-medium text-gray-700">0.3g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-blueberry" style="width: 0.3%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fat</span>
+                                        <span class="font-medium text-gray-700">0.2g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-strawberry" style="width: 0.2%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fiber</span>
+                                        <span class="font-medium text-gray-700">2.4g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-lime" style="width: 2.4%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="POST" action="/add-to-your-food" class="mt-2">
+                            <input type="hidden" name="food_id" value="1">
+                            <button type="submit" class="w-full bg-gradient text-white font-medium py-2 px-3 rounded-lg transition shadow hover:shadow-lg transform hover:-translate-y-1 text-sm">
+                                <i class="fas fa-plus-circle mr-1"></i> Add to Your Food
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <!-- Sample Food Card 2 -->
+                <div class="food-card bg-white rounded-xl shadow-lg overflow-hidden flex">
+                    <div class="w-1/3 flex-shrink-0">
+                        <div class[Box continues below]
+
+                    <div class="relative h-full">
+                            <img src="/static/banana.png" 
+                                 alt="Banana" 
+                                 class="w-full h-full object-cover transition-transform duration-500 hover:scale-110" 
+                                 loading="lazy" />
+                            <div class="absolute top-0 right-0 bg-fruit-orange text-white px-2 py-1 rounded-bl-lg text-sm font-medium">
+                                89 kcal
+                            </div>
+                        </div>
+                    </div>
+                    <div class="w-2/3 p-4 flex flex-col justify-between">
+                        <div>
+                            <h2 class="text-lg font-bold text-gray-800 mb-2">Banana</h2>
+                            <div class="nutrition-bars space-y-2">
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Carbs</span>
+                                        <span class="font-medium text-gray-700">23g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-orange" style="width: 23%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Protein</span>
+                                        <span class="font-medium text-gray-700">1.1g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-blueberry" style="width: 1.1%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fat</span>
+                                        <span class="font-medium text-gray-700">0.3g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-strawberry" style="width: 0.3%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between text-xs">
+                                        <span class="font-medium text-gray-700">Fiber</span>
+                                        <span class="font-medium text-gray-700">2.6g</span>
+                                    </div>
+                                    <div class="nutrition-bar">
+                                        <div class="nutrition-progress bg-fruit-lime" style="width: 2.6%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <form method="POST" action="/add-to-your-food" class="mt-2">
+                            <input type="hidden" name="food_id" value="2">
+                            <button type="submit" class="w-full bg-gradient text-white font-medium py-2 px-3 rounded-lg transition shadow hover:shadow-lg transform hover:-translate-y-1 text-sm">
+                                <i class="fas fa-plus-circle mr-1"></i> Add to Your Food
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-white py-6 px-4 shadow-inner">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-4 md:mb-0">
+                    <div class="font-bold text-lg bg-clip-text text-fruit-orange">NutriDiary</div>
+                    <span class="text-fruit-strawberry text-2xl mr-2"><i class="fas fa-apple-whole ml-1"></i></span>
+                </div>
+                <div class="text-center md:text-right">
+                    <p class="text-gray-600 text-sm">© 2025 NutriDiary - Be mindful of each ingredient you consume.🍏</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Alert and Nutrition Bar Animation -->
+    <script>
+        // Close alert function
+        function closeAlert(element) {
+            const alert = element.closest('.alert');
+            alert.classList.add('closing');
+            setTimeout(() => {
+                alert.remove();
+            }, 500);
+        }
+
+        // Animate nutrition bars on scroll
+        document.addEventListener('DOMContentLoaded', () => {
+            const bars = document.querySelectorAll('.nutrition-progress');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.width = entry.target.style.width;
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            bars.forEach(bar => observer.observe(bar));
+        });
+    </script>
+</body>
+</html>
