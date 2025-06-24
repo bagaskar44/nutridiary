@@ -184,43 +184,10 @@
             <div class="w-full md:w-1/2 p-8 md:p-12">
                 <div class="text-center mb-8">
                     <h1 class="text-3xl font-bold mb-2">Welcome!</h1>
-                    <p class="text-gray-600">Sign up to use your nutritional journey</p>
+                    <p class="text-gray-600">This is a static demo of NutriDiary.</p>
                 </div>
-                
-                <form action="/register" method="POST" oninput="validateForm()">
-                    <div class="relative mb-6">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
-                            <i class="fas fa-user"></i>
-                        </span>
-                        <input type="text" name="username" placeholder="Username" required
-                            class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
-                    </div>
-
-                    <div class="relative mb-6">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
-                            <i class="fas fa-envelope"></i>
-                        </span>
-                        <input type="email" name="email" placeholder="Email" required
-                            class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
-                    </div>
-                    
-                    <div class="relative mb-6">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                        <input type="password" name="password" placeholder="Password" required
-                            class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
-                    </div>
-
-                    <div class="relative mb-6">
-                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
-                            <i class="fas fa-lock"></i>
-                        </span>
-                        <input type="password" name="confirm_password" placeholder="Confirm Password" required
-                            class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
-                    </div>
-
-                    <button type="submit" id="signupButton" class="w-full py-3 rounded-lg bg-gradient text-white font-medium hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1" onclick="window.location.href='login_view.html'" disabled>
+                <form action="/register" method="POST">
+                    <button type="submit" class="w-full py-3 rounded-lg bg-gradient text-white font-medium hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1" onclick="window.location.href='/homw_view_user.html'">
                         Sign Up
                     </button>
 
@@ -249,7 +216,7 @@
         <p>© 2025 NutriDiary - Be mindful of each ingredient you consume.🍏</p>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Alert Animation -->
     <script>
         // Close alert function
         function closeAlert(element) {
@@ -258,22 +225,6 @@
             setTimeout(() => {
                 alert.remove();
             }, 500);
-        }
-
-        // Form validation function
-        function validateForm() {
-            const username = document.querySelector('input[name="username"]').value;
-            const email = document.querySelector('input[name="email"]').value;
-            const password = document.querySelector('input[name="password"]').value;
-            const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
-            const signupButton = document.getElementById('signupButton');
-
-            // Check if all fields are filled
-            if (username.trim() && email.trim() && password.trim() && confirmPassword.trim()) {
-                signupButton.disabled = false;
-            } else {
-                signupButton.disabled = true;
-            }
         }
     </script>
 </body>
