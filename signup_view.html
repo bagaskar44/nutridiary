@@ -192,7 +192,7 @@
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
                             <i class="fas fa-user"></i>
                         </span>
-                        <input type="text" name="username" placeholder="Username" required
+                        <input id="username" type="text" name="username" placeholder="Username" required
                             class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
                     </div>
 
@@ -200,7 +200,7 @@
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
                             <i class="fas fa-envelope"></i>
                         </span>
-                        <input type="email" name="email" placeholder="Email" required
+                        <input id="email" type="email" name="email" placeholder="Email" required
                             class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
                     </div>
                     
@@ -208,7 +208,7 @@
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
                             <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" name="password" placeholder="Password" required
+                        <input id="password" type="password" name="password" placeholder="Password" required
                             class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
                     </div>
 
@@ -216,11 +216,11 @@
                         <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-fruit-orange">
                             <i class="fas fa-lock"></i>
                         </span>
-                        <input type="password" name="confirm_password" placeholder="Confirm Password" required
+                        <input id="confirm_password" type="password" name="confirm_password" placeholder="Confirm Password" required
                             class="w-full py-3 px-10 bg-gray-50 border rounded-lg input-focus focus:outline-none transition-all text-gray-700">
                     </div>
 
-                    <button type="submit" id="signupButton" class="w-full py-3 rounded-lg bg-gradient text-white font-medium hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1" onclick="window.location.href='login_view.html'" disabled>
+                    <button type="submit" id="signupButton" class="w-full py-3 rounded-lg bg-gradient text-white font-medium hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1" disabled>
                         Sign Up
                     </button>
 
@@ -268,8 +268,8 @@
             const confirmPassword = document.querySelector('input[name="confirm_password"]').value;
             const signupButton = document.getElementById('signupButton');
 
-            // Check if all fields are filled
-            if (username.trim() && email.trim() && password.trim() && confirmPassword.trim()) {
+            // Check if all fields are filled and passwords match
+            if (username.trim() && email.trim() && password.trim() && confirmPassword.trim() && password === confirmPassword) {
                 signupButton.disabled = false;
             } else {
                 signupButton.disabled = true;
